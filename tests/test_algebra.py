@@ -13,6 +13,7 @@ class TestAlgebra(unittest.TestCase):
         self.a = [63.0, 150.0]
         self.b = [67.0, 160.0]
         self.c = [100.0, 100.0]
+        self.matrix_a = [[1, 2, 3], [4, 5, 6]]
 
     def test_vector_add(self):
         """algebra -- vector addition"""
@@ -66,3 +67,32 @@ class TestAlgebra(unittest.TestCase):
         """algebra -- distance"""
         dist = algebra.distance(self.a, self.b)
         self.assertEqual(10.77, round(dist, 2))
+
+    def test_shape(self):
+        """algebra -- shape"""
+        result = algebra.shape(self.matrix_a)
+        self.assertEqual((2, 3), result)
+
+    def test_get_row(self):
+        """algebra -- get row"""
+        result = algebra.get_row(self.matrix_a, 1)
+        self.assertEqual([4, 5, 6], result)
+
+    def test_get_column(self):
+        """algebra -- get column"""
+        result = algebra.get_column(self.matrix_a, 1)
+
+    def test_mk_matrix(self):
+        """algebra -- make matrix"""
+        is_diagonal = lambda i, j: 1 if i == j else 0
+
+        identity_m = algebra.mk_matrix(5, 5, is_diagonal)
+
+        expected = [
+            [1, 0, 0, 0, 0],
+            [0, 1, 0, 0, 0],
+            [0, 0, 1, 0, 0],
+            [0, 0, 0, 1, 0],
+            [0, 0, 0, 0, 1]
+        ]
+        self.assertEqual(expected, identity_m)
