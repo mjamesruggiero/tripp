@@ -67,7 +67,7 @@ def covariance(x, y):
     return algebra.dot(de_mean(x), de_mean(y)) / (n - 1)
 
 def correlation(x, y):
-    """divide the statndard deviation of both variables"""
+    """divide the standard deviation of both variables"""
     stdev_x = standard_deviation(x)
     stdev_y = standard_deviation(y)
     if  stdev_x > 0 and stdev_y > 0:
