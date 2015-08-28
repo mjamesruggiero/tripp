@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from __future__ import division
 from collections import Counter
-from algebra import sum_of_squares
+import algebra
 import math
 import logging
 
@@ -43,9 +43,9 @@ def data_range(elements):
 
 def variance(elements):
     """assumes x has at least 2 elements"""
-    n = mean(elements)
-    dev2 = [(x - n)**2 for x in elements]
-    return mean(dev2)
+    n = len(elements)
+    deviations = de_mean(elements)
+    return algebra.sum_of_squares(deviations) / (n - 1)
 
 def standard_deviation(x):
     return math.sqrt(variance(x))
@@ -54,3 +54,23 @@ def interquartile_range(elements):
     """the difference between
     the 75th percentile and 25th percentile"""
     return quantile(elements, 0.75) - quantile(elements, 0.25)
+
+def de_mean(x):
+    """translate x by subtracting the mean
+    so that the result has mean zero"""
+    x_bar = mean(x)
+    return [x_i - x_bar for x_i in x]
+
+def covariance(x, y):
+    """how variables vary in tandem from their means"""
+    n = len(x)
+    return algebra.dot(de_mean(x), de_mean(y)) / (n - 1)
+
+def correlation(x, y):
+    """divide the statndard deviation of both variables"""
+    stdev_x = standard_deviation(x)
+    stdev_y = standard_deviation(y)
+    if  stdev_x > 0 and stdev_y > 0:
+        return covariance(x, y) / stdev_x / stdev_y
+    else:
+        return 0
