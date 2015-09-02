@@ -2,7 +2,7 @@
 import math
 import logging
 
-logging.basicConfig(level=logging.INFO, format="%(lineno)d\t%(message)s")
+logging.basicConfig(level=logging.ERROR, format="%(lineno)d\t%(message)s")
 
 
 def vector_add(v, w):
@@ -57,19 +57,23 @@ def distance(v, w):
     """the distance between two vectors"""
     return math.sqrt(squared_distance(v, w))
 
+
 def shape(a):
     """the shape of a matrix"""
     _rows = len(a)
     _cols = len(a[0]) if a else 0
     return _rows, _cols
 
+
 def get_row(a, i):
     """the row of a matrix"""
     return a[i]
 
+
 def get_column(a, j):
     """the column of a matrix"""
     return [a_i[j] for a_i in a]
+
 
 def mk_matrix(rows, cols, entry_fn):
     """returns rows x cols matrix
