@@ -7,7 +7,7 @@ from .context import tripp
 from tripp import stats
 import logging
 
-logging.basicConfig(level=logging.ERROR, format="%(lineno)d\t%(message)s")
+logging.basicConfig(level=logging.INFO, format="%(lineno)d\t%(message)s")
 
 
 class TestStats(unittest.TestCase):

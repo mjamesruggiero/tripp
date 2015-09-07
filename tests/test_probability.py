@@ -6,7 +6,7 @@ import unittest
 from tripp import probability
 
 
-logging.basicConfig(level=logging.ERROR, format="%(lineno)d\t%(message)s")
+logging.basicConfig(level=logging.INFO, format="%(lineno)d\t%(message)s")
 
 
 class TestProbability(unittest.TestCase):

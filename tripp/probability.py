@@ -3,7 +3,7 @@ import logging
 import math
 import random
 
-logging.basicConfig(level=logging.ERROR, format="%(lineno)d\t%(message)s")
+logging.basicConfig(level=logging.INFO, format="%(lineno)d\t%(message)s")
 
 
 def uniform_pdf(x):

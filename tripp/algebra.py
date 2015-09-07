@@ -2,7 +2,7 @@
 import math
 import logging
 
-logging.basicConfig(level=logging.ERROR, format="%(lineno)d\t%(message)s")
+logging.basicConfig(level=logging.INFO, format="%(lineno)d\t%(message)s")
 
 
 def vector_add(v, w):
