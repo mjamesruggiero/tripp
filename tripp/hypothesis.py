@@ -150,12 +150,14 @@ if __name__ == '__main__':
     logging.info("normal_two_sided_bounds(0.95, mu_0, sigma_0)\t{}"
                  .format(normal_two_sided_bounds(0.95, mu_0, sigma_0)))
 
-    logging.info("-- 95% bounds based on assumption that p is 0.5")
+    logging.info("-----------------------------------------------")
+    logging.info("95% bounds based on assumption that p is 0.5")
     lo, hi = normal_two_sided_bounds(0.95, mu_0, sigma_0)
     logging.info("lo\t{}".format(lo))
     logging.info("hi\t{}".format(hi))
 
-    logging.info("-- actual mu and sigma based on p = 0.55")
+    logging.info("-----------------------------------------------")
+    logging.info("actual mu and sigma based on p = 0.55")
     mu_1, sigma_1 = normal_approximation_to_binomial(1000, 0.55)
     logging.info("mu_1\t{}".format(mu_1))
     logging.info("sigma_1\t{}".format(sigma_1))
