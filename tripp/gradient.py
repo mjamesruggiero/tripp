@@ -21,3 +21,40 @@ def step(v, direction, step_size):
 
 def sum_of_squares_gradient(v):
     return [2 * i for i in v]
+
+
+def safe(f):
+    """return a new function that's the same as f,
+    except that it outputs infinity whenever f
+    returns an error"""
+    def safe_f(*args, **kwargs):
+        """docstring for safe_f"""
+        try:
+            return f(*args, **kwargs)
+        except:
+            return float('inf')
+    return safe_f
+
+
+def minimize_batch(target_fn, gradient_fn, theta_0, tolerance=0.0000001):
+    """use gradient descent to find theta
+    that minimizes target function"""
+    step_sizes = [100, 10, 1, 0.1, 0.01, 0.001, 0.0001, 0.00001]
+
+    theta = theta_0
+    target_fn = safe(target_fn)
+    value = target_fn(theta)
+
+    while True:
+        _gradient = gradient_fn(theta)
+        next_thetas = [step(theta, _gradient, -step_size)
+                       for step_size in step_sizes]
+
+        # choose the one that minimizes the error function
+        next_theta = min(next_thetas, key=target_fn)
+        next_value = target_fn(next_theta)
+
+        if abs(value - next_value) < tolerance:
+            return theta
+        else:
+            theta, value = next_theta, next_value

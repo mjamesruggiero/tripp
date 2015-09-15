@@ -5,7 +5,9 @@ import unittest
 
 from .context import tripp
 from tripp import gradient
+from tripp import algebra
 from functools import partial
+import random
 import logging
 
 logging.basicConfig(level=logging.INFO, format="%(lineno)d\t%(message)s")
@@ -43,3 +45,19 @@ class TestGradient(unittest.TestCase):
         for comparison in zip(actuals, estimates):
             actual, estimate = comparison
             self.assertEqual(actual, int(round(estimate, 1)))
+
+    def test_step(self):
+        """gradient -- step"""
+        v = [random.randint(-10, 10) for i in range(3)]
+
+        tolerance = 0.0000001
+        while True:
+            _gradient = gradient.sum_of_squares_gradient(v)
+            next_v = gradient.step(v, _gradient, -0.01)
+            if algebra.distance(next_v, v) < tolerance:
+                break
+            v = next_v
+
+        expected = [0.0, 0.0, 0.0]
+        returned = map(lambda x: round(x, 5), v)
+        self.assertEqual(returned, expected)
