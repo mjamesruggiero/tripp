@@ -61,3 +61,17 @@ class TestGradient(unittest.TestCase):
         expected = [0.0, 0.0, 0.0]
         returned = map(lambda x: round(x, 5), v)
         self.assertEqual(returned, expected)
+
+    def test_negate(self):
+        """gradient -- negate"""
+        vals = [2, 4.5, 99, 0.000005]
+        funcs = [
+            lambda w: 7 * w + 5,
+            lambda x: x * 2,
+            lambda y: y ** 4,
+            lambda z: 2 * z - 7,
+            lambda w: 7 * w + 5]
+        for v, f in zip(vals, funcs):
+            result = f(v)
+            negation = gradient.negate(f)
+            self.assertEqual(result * -1, negation(v))
