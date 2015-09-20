@@ -1,9 +1,12 @@
 from bs4 import BeautifulSoup
 from collections import Counter
 from time import sleep
+import math
 import matplotlib.pyplot as pyplot
+import probability
 import re
 import requests
+import random
 
 
 def is_video(td):
@@ -71,9 +74,38 @@ def plot_years(books, asset="/tmp/oreilly-books.png"):
     pyplot.title("Data grows up")
     pyplot.savefig(asset)
 
-if __name__ == '__main__':
-    books = scrape(6)
-    for book in books:
-        print "->{0}".format(book)
 
-    plot_years(books)
+def bucketize(point, bucket_size):
+    """floor the point to the next lower multiple of bucket size"""
+    return bucket_size * math.floor(point / bucket_size)
+
+
+def make_histogram(points, bucket_size):
+    """buckets the points and counts how many in each bucket"""
+    return Counter(bucketize(point, bucket_size) for point in points)
+
+
+def plot_histogram(points, bucket_size, title="", asset="histogram.png"):
+    """generate plot for bucketed data"""
+    histogram = make_histogram(points, bucket_size)
+    pyplot.bar(histogram.keys(), histogram.values(), width=bucket_size)
+    pyplot.title(title)
+    pyplot.savefig(asset)
+
+if __name__ == '__main__':
+    test = 'HISTOGRAM'
+
+    if test == 'SCRAPE':
+        books = scrape(6)
+        for book in books:
+            print "->{0}".format(book)
+        plot_years(books)
+
+    if test == 'HISTOGRAM':
+        random.seed(0)
+        uniform = [200 * random.random() - 100 for _ in range(10000)]
+        normal = [57 * probability.inverse_normal_cdf(random.random())
+                  for _ in range(10000)]
+
+        plot_histogram(uniform, 10, 'Uniform Histogram', 'uniform.png')
+        plot_histogram(normal, 10, 'Normal Histogram', 'normal.png')
