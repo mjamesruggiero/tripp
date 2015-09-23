@@ -7,6 +7,9 @@ import probability
 import re
 import requests
 import random
+import json
+import algebra
+import stats
 
 
 def is_video(td):
@@ -75,6 +78,21 @@ def plot_years(books, asset="/tmp/oreilly-books.png"):
     pyplot.savefig(asset)
 
 
+def github_data(username="joelgrus"):
+    endpoint = "https://api.github.com/users/{u}/repos".format(u=username)
+    raw_json = requests.get(endpoint).text
+    repos = json.loads(raw_json)
+    return repos
+
+
+def languages_for(repo_json, n=5):
+    last_n_repos = sorted(repo_json,
+                          key=lambda r: r['created_at'],
+                          reverse=True)[0:n]
+    languages = [repo['language'] for repo in last_n_repos]
+    return languages
+
+
 def bucketize(point, bucket_size):
     """floor the point to the next lower multiple of bucket size"""
     return bucket_size * math.floor(point / bucket_size)
@@ -92,8 +110,26 @@ def plot_histogram(points, bucket_size, title="", asset="histogram.png"):
     pyplot.title(title)
     pyplot.savefig(asset)
 
+
+def random_normal():
+    """returns a random draw from a standard normal distribution"""
+    return probability.inverse_normal_cdf(random.random())
+
+
+def correlation_matrix(data):
+    """returns the num_columns x num_columns matrix whose (i, j)th entry
+    is the correlation between columns i and j of data"""
+    _, num_columns = algebra.shape(data)
+
+    def matrix_entry(i, j):
+        return stats.correlation(algebra.get_column(data, i),
+                                 algebra.get_column(data, j))
+
+    return algebra.mk_matrix(num_columns, num_columns, matrix_entry)
+
+
 if __name__ == '__main__':
-    test = 'HISTOGRAM'
+    test = 'SCATTER'
 
     if test == 'SCRAPE':
         books = scrape(6)
@@ -109,3 +145,23 @@ if __name__ == '__main__':
 
         plot_histogram(uniform, 10, 'Uniform Histogram', 'uniform.png')
         plot_histogram(normal, 10, 'Normal Histogram', 'normal.png')
+
+    if test == 'GITHUB':
+        user = 'mjamesruggiero'
+        repo = github_data(user)
+        languages = languages_for(repo, 10)
+        for l in languages:
+            print "* {0}".format(l)
+
+    if test == 'SCATTER':
+        asset = 'scatter.png'
+        xs = [random_normal() for _ in range(1000)]
+        ys1 = [x + random_normal() / 2 for x in xs]
+        ys2 = [-x + random_normal() / 2 for x in xs]
+
+        pyplot.scatter(xs, ys1, marker='.', color='black', label='ys1')
+        pyplot.scatter(xs, ys2, marker='.', color='gray', label='ys2')
+        pyplot.xlabel('xs')
+        pyplot.ylabel('ys')
+        pyplot.legend(loc=9)
+        pyplot.savefig(asset)
