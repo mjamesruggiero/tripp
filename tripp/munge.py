@@ -87,6 +87,20 @@ def parse_or_mk_none(f):
             return None
     return f_or_none
 
+
+def try_parse_field(field_name, value, parser_dict):
+    """try to parse value using the appropriate function from parser dict"""
+    parser = parser_dict.get(field_name)
+    if parser is not None:
+        return parse_or_mk_none(parser)(value)
+    else:
+        return value
+
+def parse_dict(input_dict, parsers):
+    return { field_name: try_parse_field(field_name, value, parsers)
+            for field_name, value in input_dict.iteritems() }
+
+
 if __name__ == '__main__':
     test = 'MATRIX'
 

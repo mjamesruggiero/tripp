@@ -33,3 +33,26 @@ class TestMunge(unittest.TestCase):
 
         self.assertEqual(expected_first_and_fourth[0], data[0])
         self.assertEqual(expected_first_and_fourth[1], data[4])
+
+
+    def test_parse_dict_utilized_parsers(self):
+        """munge -- parse_dict"""
+        test_dict = {
+            "birthdate": "9/30/1967",
+            "age": "29",
+            "occupation": "Layabout",
+            "zip": "94578"
+        }
+        parsers = {
+            "birthdate": dateutil.parser.parse, "age": float, "zip": int
+        }
+
+        result = munge.parse_dict(test_dict, parsers)
+        expected = {
+            "birthdate": datetime.datetime(1967, 9, 30, 0, 0),
+            "age": 29.0,
+            "occupation": "Layabout",
+            "zip": 94578
+        }
+        for k in expected:
+            self.assertEqual(expected[k], result.get(k))
