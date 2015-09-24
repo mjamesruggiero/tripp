@@ -20,7 +20,7 @@ class TestMunge(unittest.TestCase):
     def test_parse_rows_with_utilizes_parsers(self):
         """munge - parse_rows_with"""
         data = []
-        with open(self.csv, "rb") as f:
+        with open(self.csv_file, "rb") as f:
             reader = csv.reader(f)
             parsers = [dateutil.parser.parse, None, float]
             for line in munge.parse_rows_with(reader, parsers):
