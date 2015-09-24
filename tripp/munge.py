@@ -128,8 +128,48 @@ def correlation_matrix(data):
     return algebra.mk_matrix(num_columns, num_columns, matrix_entry)
 
 
+def make_random_matrix():
+    _points = 100
+
+    def random_row():
+        row = [None, None, None, None]
+        row[0] = random_normal()
+        row[1] = -5 * row[0] + random_normal()
+        row[2] = row[0] + row[1] + 5 * random_normal()
+        row[3] = 6 if row[2] > -2 else 0
+        return row
+
+    random.seed(0)
+    data = [random_row() for _ in range(_points)]
+    return data
+
+
+def parse_row(input_row, parsers):
+    """Given a list of parsers (whose values can be None)
+    apply the appropriate one to eac element of input_row"""
+    return [parse_or_mk_none(parser)(value)
+            if parser is not None else value
+            for value, parser in zip(input_row, parsers)]
+
+
+def parse_rows_with(reader, parsers):
+    """Wrap a reader to apply the parsers to each of its rows"""
+    for row in reader:
+        yield parse_row(row, parsers)
+
+
+def parse_or_mk_none(f):
+    """Wrap f to return None if f raises;
+    assumes f takes 1 input)"""
+    def f_or_none(x):
+        try:
+            return f(x)
+        except:
+            return None
+    return f_or_none
+
 if __name__ == '__main__':
-    test = 'SCATTER'
+    test = 'MATRIX'
 
     if test == 'SCRAPE':
         books = scrape(6)
@@ -165,3 +205,11 @@ if __name__ == '__main__':
         pyplot.ylabel('ys')
         pyplot.legend(loc=9)
         pyplot.savefig(asset)
+
+        # look at the correlations
+        print "correlation of xs and ys1: {}".format(stats.correlation(xs, ys1))
+        print "correlation of xs and ys2: {}".format(stats.correlation(xs, ys2))
+
+    if test == 'MATRIX':
+        c_matrix = correlation_matrix(make_random_matrix())
+        print "correlation matrix of random matrix: {}".format(c_matrix)
