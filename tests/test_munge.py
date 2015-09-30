@@ -56,3 +56,46 @@ class TestMunge(unittest.TestCase):
         }
         for k in expected:
             self.assertEqual(expected[k], result.get(k))
+
+
+    def test_grouping_works(self):
+        """munge -- group_by"""
+        data = [
+            {
+                'closing_price': 77.60,
+                'date': datetime.datetime(2014, 8, 28, 0, 0),
+                'symbol': 'AAPL'
+            },
+            {
+                'closing_price': 13.60,
+                'date': datetime.datetime(2014, 8, 28, 0, 0),
+                'symbol': 'MSFT'
+            },
+            {
+                'closing_price': 15.82,
+                'date': datetime.datetime(2014, 8, 28, 0, 0),
+                'symbol': 'GOOG'
+            },
+            {
+                'closing_price': 2.06,
+                'date': datetime.datetime(2014, 8, 29, 0, 0),
+                'symbol': 'AAPL'
+            },
+            {
+                'closing_price': 3.06,
+                'date': datetime.datetime(2014, 8, 29, 0, 0),
+                'symbol': 'MSFT'
+            },
+            {
+                'closing_price': 102.06,
+                'date': datetime.datetime(2014, 8, 29, 0, 0),
+                'symbol': 'GOOG'
+            }
+        ]
+        result = munge.group_by(munge.picker("symbol"),
+                                data,
+                                lambda rows: max(munge.pluck("closing_price", rows)))
+
+        expected = { 'GOOG': 102.06, 'AAPL': 77.6, 'MSFT': 13.6 }
+        self.assertEqual(expected, result)
+

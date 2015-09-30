@@ -1,5 +1,5 @@
 from bs4 import BeautifulSoup
-from collections import Counter
+from collections import Counter, defaultdict
 from time import sleep
 import math
 import matplotlib.pyplot as pyplot
@@ -100,6 +100,27 @@ def parse_dict(input_dict, parsers):
     return { field_name: try_parse_field(field_name, value, parsers)
             for field_name, value in input_dict.iteritems() }
 
+
+def picker(field_name):
+    """returns function that picks a field out of a dict"""
+    return lambda row: row[field_name]
+
+
+def pluck(field_name, rows):
+    """turns list of dicts into list of field_name values"""
+    return map(picker(field_name), rows)
+
+
+def group_by(grouper, rows, value_transform=None):
+    """key is output of grouper, value is list of rows"""
+    grouped = defaultdict(list)
+    for row in rows:
+        grouped[grouper(row)].append(row)
+    if value_transform is None:
+        return grouped
+    else:
+        return { key: value_transform(rows)
+                 for key, rows in grouped.iteritems() }
 
 if __name__ == '__main__':
     test = 'MATRIX'
