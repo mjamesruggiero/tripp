@@ -1,13 +1,8 @@
-from bs4 import BeautifulSoup
 from collections import Counter, defaultdict
-from time import sleep
 import math
 import matplotlib.pyplot as pyplot
 import probability
-import re
-import requests
 import random
-import json
 import algebra
 import stats
 
@@ -96,9 +91,10 @@ def try_parse_field(field_name, value, parser_dict):
     else:
         return value
 
+
 def parse_dict(input_dict, parsers):
-    return { field_name: try_parse_field(field_name, value, parsers)
-            for field_name, value in input_dict.iteritems() }
+    return {field_name: try_parse_field(field_name, value, parsers)
+            for field_name, value in input_dict.iteritems()}
 
 
 def picker(field_name):
@@ -119,8 +115,9 @@ def group_by(grouper, rows, value_transform=None):
     if value_transform is None:
         return grouped
     else:
-        return { key: value_transform(rows)
-                 for key, rows in grouped.iteritems() }
+        return {key: value_transform(rows)
+                for key, rows in grouped.iteritems()}
+
 
 def scale(data_matrix):
     """returns the mean and standard deviations of each column"""
@@ -129,8 +126,9 @@ def scale(data_matrix):
              for j in range(num_cols)]
 
     stddevs = [stats.standard_deviation(algebra.get_column(data_matrix, j))
-                                  for j in range(num_cols)]
+               for j in range(num_cols)]
     return means, stddevs
+
 
 def rescale(data_matrix):
     """rescales the input data so that each column
@@ -140,7 +138,7 @@ def rescale(data_matrix):
 
     def rescaled(i, j):
         if stddevs[j] > 0:
-            return (data_matrix[i][j] - means[j]) /  stddevs[j]
+            return (data_matrix[i][j] - means[j]) / stddevs[j]
         else:
             return data_matrix[i][j]
 

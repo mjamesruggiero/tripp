@@ -34,7 +34,6 @@ class TestMunge(unittest.TestCase):
         self.assertEqual(expected_first_and_fourth[0], data[0])
         self.assertEqual(expected_first_and_fourth[1], data[4])
 
-
     def test_parse_dict_utilized_parsers(self):
         """munge -- parse_dict"""
         test_dict = {
@@ -56,7 +55,6 @@ class TestMunge(unittest.TestCase):
         }
         for k in expected:
             self.assertEqual(expected[k], result.get(k))
-
 
     def test_grouping_works(self):
         """munge -- group_by"""
@@ -94,11 +92,11 @@ class TestMunge(unittest.TestCase):
         ]
         result = munge.group_by(munge.picker("symbol"),
                                 data,
-                                lambda rows: max(munge.pluck("closing_price", rows)))
+                                lambda rows: max(munge.pluck("closing_price",
+                                                             rows)))
 
-        expected = { 'GOOG': 102.06, 'AAPL': 77.6, 'MSFT': 13.6 }
+        expected = {'GOOG': 102.06, 'AAPL': 77.6, 'MSFT': 13.6}
         self.assertEqual(expected, result)
-
 
     def test_scale(self):
         """munge -- scale"""
@@ -127,7 +125,7 @@ class TestMunge(unittest.TestCase):
             [3, 2, 3, 99, 5, 6, 7, 8, 9]
         ]
         result = munge.rescale(datamat)
-        expected = [ 0.8728715609439696,
+        expected = [0.8728715609439696,
                     0.440225453162812,
                     -0.5773502691896257,
                     -0.5773502691896257,
@@ -137,5 +135,3 @@ class TestMunge(unittest.TestCase):
                     8,
                     9]
         self.assertEqual(expected, result[0])
-
-
