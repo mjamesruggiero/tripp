@@ -99,3 +99,43 @@ class TestMunge(unittest.TestCase):
         expected = { 'GOOG': 102.06, 'AAPL': 77.6, 'MSFT': 13.6 }
         self.assertEqual(expected, result)
 
+
+    def test_scale(self):
+        """munge -- scale"""
+        datamat = [
+            [4, 8, 3, 4, 5, 6, 7, 8, 9],
+            [1, 9, 11, 4, 5, 6, 7, 8, 9],
+            [3, 2, 3, 99, 5, 6, 7, 8, 9]
+        ]
+        result = munge.scale(datamat)
+        expected = [2.6666666666666665,
+                    6.333333333333333,
+                    5.666666666666667,
+                    35.666666666666664,
+                    5.0,
+                    6.0,
+                    7.0,
+                    8.0,
+                    9.0]
+        self.assertEqual(expected, result[0])
+
+    def test_rescale(self):
+        """munge -- rescale"""
+        datamat = [
+            [4, 8, 3, 4, 5, 6, 7, 8, 9],
+            [1, 9, 11, 4, 5, 6, 7, 8, 9],
+            [3, 2, 3, 99, 5, 6, 7, 8, 9]
+        ]
+        result = munge.rescale(datamat)
+        expected = [ 0.8728715609439696,
+                    0.440225453162812,
+                    -0.5773502691896257,
+                    -0.5773502691896257,
+                    5,
+                    6,
+                    7,
+                    8,
+                    9]
+        self.assertEqual(expected, result[0])
+
+

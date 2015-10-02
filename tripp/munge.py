@@ -122,36 +122,27 @@ def group_by(grouper, rows, value_transform=None):
         return { key: value_transform(rows)
                  for key, rows in grouped.iteritems() }
 
-if __name__ == '__main__':
-    test = 'MATRIX'
+def scale(data_matrix):
+    """returns the mean and standard deviations of each column"""
+    num_rows, num_cols = algebra.shape(data_matrix)
+    means = [stats.mean(algebra.get_column(data_matrix, j))
+             for j in range(num_cols)]
 
-    if test == 'HISTOGRAM':
-        random.seed(0)
-        uniform = [200 * random.random() - 100 for _ in range(10000)]
-        normal = [57 * probability.inverse_normal_cdf(random.random())
-                  for _ in range(10000)]
+    stddevs = [stats.standard_deviation(algebra.get_column(data_matrix, j))
+                                  for j in range(num_cols)]
+    return means, stddevs
 
-        plot_histogram(uniform, 10, 'Uniform Histogram', 'uniform.png')
-        plot_histogram(normal, 10, 'Normal Histogram', 'normal.png')
+def rescale(data_matrix):
+    """rescales the input data so that each column
+    has mean 0 and StdDev 1;
+    leaves alone columns with no deviation"""
+    means, stddevs = scale(data_matrix)
 
+    def rescaled(i, j):
+        if stddevs[j] > 0:
+            return (data_matrix[i][j] - means[j]) /  stddevs[j]
+        else:
+            return data_matrix[i][j]
 
-    if test == 'SCATTER':
-        asset = 'scatter.png'
-        xs = [random_normal() for _ in range(1000)]
-        ys1 = [x + random_normal() / 2 for x in xs]
-        ys2 = [-x + random_normal() / 2 for x in xs]
-
-        pyplot.scatter(xs, ys1, marker='.', color='black', label='ys1')
-        pyplot.scatter(xs, ys2, marker='.', color='gray', label='ys2')
-        pyplot.xlabel('xs')
-        pyplot.ylabel('ys')
-        pyplot.legend(loc=9)
-        pyplot.savefig(asset)
-
-        # look at the correlations
-        print "correlation of xs and ys1: {}".format(stats.correlation(xs, ys1))
-        print "correlation of xs and ys2: {}".format(stats.correlation(xs, ys2))
-
-    if test == 'MATRIX':
-        c_matrix = correlation_matrix(make_random_matrix())
-        print "correlation matrix of random matrix: {}".format(c_matrix)
+    num_rows, num_cols = algebra.shape(data_matrix)
+    return algebra.mk_matrix(num_rows, num_cols, rescaled)
