@@ -3,8 +3,8 @@ import math
 import matplotlib.pyplot as pyplot
 import probability
 import random
-import algebra
 import stats
+import algebra
 
 
 def bucketize(point, bucket_size):
@@ -144,3 +144,12 @@ def rescale(data_matrix):
 
     num_rows, num_cols = algebra.shape(data_matrix)
     return algebra.mk_matrix(num_rows, num_cols, rescaled)
+
+
+def de_mean_matrix(A):
+    """returns the result of subtracting from every value in A
+    the mean value of its column; resulting matrix has mean 0
+    in every column"""
+    nr, nc = algebra.shape(A)
+    column_means, _ = scale(A)
+    return algebra.mk_matrix(nr, nc, lambda i, j: A[i][j] - column_means[j])
