@@ -1,6 +1,7 @@
 from collections import Counter
 import algebra
 
+
 def majority_vote(labels):
     """assumes that labels are ordered from nearest to farthest"""
     vote_counts = Counter(labels)
