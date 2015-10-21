@@ -1,5 +1,6 @@
 from algebra import dot
 import gradient
+import probability
 import random
 import regression
 
@@ -39,3 +40,29 @@ def multiple_r_squared(x, y, beta):
     sum_of_squared_errors = sum(error(x_i, y_i, beta) ** 2
                                 for x_i, y_i in zip(x, y))
     return 1.0 - sum_of_squared_errors / regression.total_sum_of_squares(y)
+
+
+def bootstrap_sample(data):
+    """randomly sample len(data) elements with replacement"""
+    return [random.choice(data) for _ in data]
+
+
+def bootstrap_statistic(data, stats_fn, num_samples):
+    """evaluates stats_fn on num_samples bootstrap samples from data"""
+    return [stats_fn(bootstrap_sample(data)) for _ in range(num_samples)]
+
+
+def estimate_sample_beta(sample):
+    """sample is a list of pairs (x_i, y_i)"""
+    x_sample, y_sample = zip(*sample)  # magic unzipping trick
+    return estimate_beta(x_sample, y_sample)
+
+
+def p_value(beta_hat_j, sigma_hat_j):
+    """if the coefficient is positive, we need to compute twice the
+    probability of seeing an even larger value; otherwise twice the
+    probability of seeing a smaller value"""
+    if beta_hat_j > 0:
+        return 2 * (1 - probability.normal_cdf(beta_hat_j / sigma_hat_j))
+    else:
+        return 2 * probability.normal_cdf(beta_hat_j / sigma_hat_j)
