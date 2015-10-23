@@ -1,8 +1,10 @@
 from algebra import dot
+import algebra
 import gradient
 import probability
 import random
 import regression
+from functools import partial
 
 
 def predict(x_i, beta):
@@ -66,3 +68,43 @@ def p_value(beta_hat_j, sigma_hat_j):
         return 2 * (1 - probability.normal_cdf(beta_hat_j / sigma_hat_j))
     else:
         return 2 * probability.normal_cdf(beta_hat_j / sigma_hat_j)
+
+
+def ridge_penalty(beta, alpha):
+    """alpha is a hyper-parameter controlling how harsh the penalty
+    is; sometimes called 'lambda' but that is already a Python keyword"""
+    return alpha * algebra.dot(beta[1:], beta[1:])
+
+
+def squared_error_ridge(x_i, y_i, beta, alpha):
+    """estimate error plus ridge penalty on beta"""
+    return error(x_i, y_i, beta) ** 2 + ridge_penalty(beta, alpha)
+
+
+def ridge_penalty_gradient(beta, alpha):
+    """gradient of just the ridge penalty"""
+    return [0] + [2 * alpha * beta_j for beta_j in beta[1:]]
+
+
+def sqared_error_ridge_gradient(x_i, y_i, beta, alpha):
+    """the gradient corresponding to the ith squared error term
+    including the ridge penalty"""
+    return algebra.vector_add(squared_error_gradient(x_i, y_i, beta),
+                              ridge_penalty_gradient(beta, alpha))
+
+
+def estimate_beta_ridge(x, y, alpha):
+    """use gradient descent to fit a ridge regression with penalty alpha"""
+    beta_initial = [random.random() for x_i in x[0]]
+    return gradient.minimize_stochastic(partial(squared_error_ridge,
+                                                alpha=alpha),
+                                        partial(squared_error_gradient,
+                                                alpha=alpha),
+                                        x,
+                                        y,
+                                        beta_initial,
+                                        0.001)
+
+
+def lasso_penalty(beta, alpha):
+    return alpha * sum(abs(beta_i) for beta_i in beta[1:])
