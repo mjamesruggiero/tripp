@@ -3,6 +3,7 @@ import sys
 import logging
 import random
 import decision_trees
+import argparse
 
 logging.basicConfig(level=logging.DEBUG, format="%(lineno)d\t%(message)s")
 
@@ -73,8 +74,15 @@ def partition(rates_data, keys):
     return sorted(partitioned, key=lambda x: x[1], reverse=True)
 
 if __name__ == '__main__':
-    rates_file = sys.argv[1]
-    creatives_file = sys.argv[2]
+    DESCRIPTION = 'Builds random forest for optimizing ad clickthrough'
+    parser = argparse.ArgumentParser(description=DESCRIPTION)
+
+    parser.add_argument('rates_file', action="store")
+    parser.add_argument('creatives_file', action="store")
+
+    results = parser.parse_args()
+    rates_file = results.rates_file
+    creatives_file = results.creatives_file
 
     result = main(rates_file, creatives_file)
 
