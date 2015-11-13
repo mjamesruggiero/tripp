@@ -55,6 +55,65 @@ def squared_clustering_errors(inputs, k):
                                         for input, cluster
                                         in zip(inputs, assignments))
 
+def is_leaf(cluster):
+    """a cluster of a leaf if it has length 1"""
+    return len(cluster) == 1
+
+
+def get_children(cluster):
+    """returns the two children of this cluster if it's a merged cluster;
+    raises if this is a leaf cluster"""
+    if is_leaf(cluster):
+        raise TypeError("a leaf cluster has no children")
+    else:
+        return cluster[1]
+
+def get_values(cluster):
+    """returns the value in this cluster (if it's a leaf cluster)
+    or all the values in the leaf clusters below (if it's not)"""
+    if is_leaf(cluster):
+        return cluster
+    else:
+        return [value
+                for child in get_children(cluster)
+                for value in get_values(child)]
+
+def cluster_distances(cluster1, cluster2, distance_agg=min):
+    """compute all the pairwise distances between cluster1 and cluster2
+    and apply distance_agg to the resulting list"""
+    return distance_agg([algebra.distance(input1, input2)
+                         for input1 in get_values(cluster1)
+                         for input2 in get_values(input2)])
+
+
+def merge_order(cluster):
+    if is_leaf(cluster):
+        return float('inf')
+    else:
+        return cluster[0] # merge_order is the first element of 2-tuple
+
+def bottom_up_cluster(inputs, distance_agg=min):
+    # start with every input in a leaf cluster / 1-tuple
+    clusters = [(input,) for input in inputs]
+
+    # as long as we have more than one cluster left ...
+    while(len(clusters)) > 1:
+        c1, c2 = min([cluster1, cluster2
+                      for i, cluster1 in enumerate(clusters)
+                      for cluster2 in clusters[:i]],
+                     key=lambda (x, y): cluster_distance(x, y, distance_agg))
+
+        # remove them from the list of clusters
+        clusters = [c for c on clusters if c != c1 and c != c2]
+
+        # merge them, using merge_order = # clusters left
+        merged_cluster = (len(clusters), [c1, c2])
+
+        # and add their merge
+        clusters.append(merged_cluster)
+
+    return clusters[0]
+
 if __name__ == '__main__':
 
     DESCRIPTION = 'Converts PNG to five colors'
