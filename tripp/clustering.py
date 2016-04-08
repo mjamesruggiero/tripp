@@ -14,12 +14,10 @@ class KMeans(object):
         self.k = k
         self.means = None
 
-
     def classify(self, input):
         """return the index of the cluster closest to the input"""
         return min(range(self.k),
                    key=lambda i: algebra.squared_distance(input, self.means[i]))
-
 
     def train(self, inputs):
         """choose k random points as the initial means"""
@@ -37,12 +35,12 @@ class KMeans(object):
             # otherwise, keep the new assignments
             assignments = new_assignments
 
-
             for i in range(self.k):
                 i_points = [p for p, a in zip(inputs, assignments) if a == i]
 
                 if i_points:
                     self.means[i] = algebra.vector_mean(i_points)
+
 
 def squared_clustering_errors(inputs, k):
     """finds the total squared error from k-means clustering the inputs"""
@@ -52,8 +50,9 @@ def squared_clustering_errors(inputs, k):
     assignments = map(clusterer.classify, inputs)
 
     return sum(algebra.squared_distance(input, means[cluster])
-                                        for input, cluster
-                                        in zip(inputs, assignments))
+               for input, cluster
+               in zip(inputs, assignments))
+
 
 def is_leaf(cluster):
     """a cluster of a leaf if it has length 1"""
@@ -68,6 +67,7 @@ def get_children(cluster):
     else:
         return cluster[1]
 
+
 def get_values(cluster):
     """returns the value in this cluster (if it's a leaf cluster)
     or all the values in the leaf clusters below (if it's not)"""
@@ -78,19 +78,21 @@ def get_values(cluster):
                 for child in get_children(cluster)
                 for value in get_values(child)]
 
-def cluster_distances(cluster1, cluster2, distance_agg=min):
+
+def cluster_distance(cluster1, cluster2, distance_agg=min):
     """compute all the pairwise distances between cluster1 and cluster2
     and apply distance_agg to the resulting list"""
     return distance_agg([algebra.distance(input1, input2)
                          for input1 in get_values(cluster1)
-                         for input2 in get_values(input2)])
+                         for input2 in get_values(cluster2)])
 
 
 def merge_order(cluster):
     if is_leaf(cluster):
         return float('inf')
     else:
-        return cluster[0] # merge_order is the first element of 2-tuple
+        return cluster[0]  # merge_order is the first element of 2-tuple
+
 
 def bottom_up_cluster(inputs, distance_agg=min):
     # start with every input in a leaf cluster / 1-tuple
@@ -98,13 +100,13 @@ def bottom_up_cluster(inputs, distance_agg=min):
 
     # as long as we have more than one cluster left ...
     while(len(clusters)) > 1:
-        c1, c2 = min([cluster1, cluster2
+        c1, c2 = min([(cluster1, cluster2)
                       for i, cluster1 in enumerate(clusters)
                       for cluster2 in clusters[:i]],
                      key=lambda (x, y): cluster_distance(x, y, distance_agg))
 
         # remove them from the list of clusters
-        clusters = [c for c on clusters if c != c1 and c != c2]
+        clusters = [c for c in clusters if c != c1 and c != c2]
 
         # merge them, using merge_order = # clusters left
         merged_cluster = (len(clusters), [c1, c2])
@@ -120,9 +122,11 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description=DESCRIPTION)
 
     parser.add_argument('png', action="store")
+    parser.add_argument('destination_asset', action="store")
 
     results = parser.parse_args()
     path_to_png = results.png
+    destination_asset = results.destination_asset
 
     img = matimage.imread(path_to_png)
 
@@ -132,6 +136,7 @@ if __name__ == '__main__':
 
     pixels = [pixel for row in img for pixel in row]
     clusterer = KMeans(5)
+    logging.info("this might take a while...")
     clusterer.train(pixels)
 
     def recolor(pixel):
@@ -145,4 +150,4 @@ if __name__ == '__main__':
 
     pyplot.imshow(new_img)
     pyplot.axis('off')
-    pyplot.show()
+    pyplot.savefig(destination_asset)
