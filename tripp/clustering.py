@@ -116,27 +116,22 @@ def bottom_up_cluster(inputs, distance_agg=min):
 
     return clusters[0]
 
-if __name__ == '__main__':
 
-    DESCRIPTION = 'Converts PNG to five colors'
-    parser = argparse.ArgumentParser(description=DESCRIPTION)
-
-    parser.add_argument('png', action="store")
-    parser.add_argument('destination_asset', action="store")
-
-    results = parser.parse_args()
-    path_to_png = results.png
-    destination_asset = results.destination_asset
-
-    img = matimage.imread(path_to_png)
+def decolor(asset, target_asset="/tmp/new-image.png"):
+    """De-color PNG assets to a 5-color analog"""
+    img = matimage.imread(asset)
 
     top_row = img[0]
     top_left_pixel = top_row[0]
-    red, green, blue, _ = top_left_pixel
 
+    logging.info("destructuring the top left pixel")
+    red, green, blue = top_left_pixel
+
+    logging.info("about to read pixels")
     pixels = [pixel for row in img for pixel in row]
     clusterer = KMeans(5)
-    logging.info("this might take a while...")
+
+    logging.info("training... might take a while...")
     clusterer.train(pixels)
 
     def recolor(pixel):
@@ -150,4 +145,19 @@ if __name__ == '__main__':
 
     pyplot.imshow(new_img)
     pyplot.axis('off')
-    pyplot.savefig(destination_asset)
+    pyplot.savefig(target_asset)
+
+
+if __name__ == '__main__':
+
+    DESCRIPTION = 'Converts PNG to five colors'
+    parser = argparse.ArgumentParser(description=DESCRIPTION)
+
+    parser.add_argument('png', action="store")
+    parser.add_argument('destination_asset', action="store")
+
+    results = parser.parse_args()
+    path_to_png = results.png
+    destination_asset = results.destination_asset
+
+    decolor(path_to_png, destination_asset)
