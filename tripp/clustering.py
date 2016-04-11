@@ -117,6 +117,22 @@ def bottom_up_cluster(inputs, distance_agg=min):
     return clusters[0]
 
 
+def generate_clusters(base_cluster, num_clusters):
+    """generates any number of clusters
+    by performing the appropriate number of unmerges"""
+    clusters = [base_cluster]
+
+    while len(clusters) < num_clusters:
+        # choose the last-merged of our clusters
+        next_cluster = min(clusters, key=merge_order)
+        # remove it from the list
+        clusters = [c for c in clusters if c != next_cluster]
+        # add its cildren to the list (or un-merge it)
+        clusters.extend(get_children(next_cluster))
+
+    return clusters
+
+
 def decolor(asset, target_asset="/tmp/new-image.png"):
     """De-color PNG assets to a 5-color analog"""
     img = matimage.imread(asset)
