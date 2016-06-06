@@ -132,6 +132,10 @@ def generate_clusters(base_cluster, num_clusters):
 
     return clusters
 
+def example_clustering():
+    three_clusters = [get_values(c)
+                      for c in generate_clusters(base_cluster, 3)]
+
 
 def decolor(asset, target_asset="/tmp/new-image.png"):
     """De-color PNG assets to a 5-color analog"""
