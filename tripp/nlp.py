@@ -54,6 +54,19 @@ def generate_using_bigrams(transitions):
         if current == ".":
             return " ".join(result)
 
+def generate_using_trigrams(starts, transitions):
+    current = random.choice(starts)
+    prev = "."
+    result = [current]
+    while True:
+        next_word_candidates = transitions[(prev, current)]
+        next = random.choice(next_word_candidates)
+
+        prev, current = current, next
+        result.append(current)
+        if current == ".":
+            return " ".join(result)
+
 def get_document(url):
     html = requests.get(url).text
     soup = BeautifulSoup(html, 'html5lib')
