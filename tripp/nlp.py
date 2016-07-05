@@ -4,6 +4,9 @@ import requests
 import re
 from collections import defaultdict
 import random
+import logging
+
+logging.basicConfig(level=logging.INFO, format="%(lineno)d\t%(message)s")
 
 
 def text_size(total):
@@ -60,9 +63,10 @@ def generate_using_trigrams(starts, transitions):
     result = [current]
     while True:
         next_word_candidates = transitions[(prev, current)]
-        next = random.choice(next_word_candidates)
+        next_word = random.choice(next_word_candidates)
 
-        prev, current = current, next
+        prev, current = current, next_word
+        logging.debug("result is {}".format(result))
         result.append(current)
         if current == ".":
             return " ".join(result)
@@ -82,12 +86,7 @@ def get_document(url):
         document.extend(words)
     return document
 
-
-if __name__ == '__main__':
-    #build_buzzword_ranking()
-
-    url = "http://radar.oreilly.com/2010/06/what-is-data-science.html"
-
+def bigram_poc(url, count=10):
     document = get_document(url)
     bigrams = zip(document, document[1:])
     transitions = defaultdict(list)
@@ -95,5 +94,38 @@ if __name__ == '__main__':
         transitions[prev].append(current)
 
     random.seed(0)
-    for i in range(10):
-        print i, generate_using_bigrams(transitions)
+    result = []
+    for i in range(count):
+        result.append(generate_using_bigrams(transitions))
+    return result
+
+def get_trigram(document):
+    trigrams = zip(document, document[1:], document[2:])
+    trigram_transitions = defaultdict(list)
+    starts = []
+    for prev, current, next in trigrams:
+        if prev == ".":
+            starts.append(current)
+        trigram_transitions[(prev, current)].append(next)
+
+    logging.debug("starts is {}".format(starts))
+    generated = generate_using_trigrams(starts, trigram_transitions)
+    return generated
+
+
+
+if __name__ == '__main__':
+    TEST_METHODOLOGY = 'trigrams'
+
+    url = "http://radar.oreilly.com/2010/06/what-is-data-science.html"
+
+    if 'bigrams' == TEST_METHODOLOGY:
+        bigrams = bigram_poc(url, count=20)
+        for l in bigrams:
+            logging.info("bigram -> {}".format(l))
+
+    if 'trigrams' == TEST_METHODOLOGY:
+        document = get_document(url)
+        for i in range(0, 5):
+            trigram_sentence = get_trigram(document)
+            logging.info("trigram-> {}".format(trigram_sentence))
