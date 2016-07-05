@@ -1,1 +1,10 @@
-wheel==0.23.0
+beautifulsoup4==4.4.1
+cycler==0.10.0
+html5lib==0.9999999
+matplotlib==1.5.1
+numpy==1.11.1
+pyparsing==2.1.5
+python-dateutil==2.5.3
+pytz==2016.4
+requests==2.10.0
+six==1.10.0
