@@ -13,39 +13,36 @@ def text_size(total):
     """Equals 8 if total is 0, 28 if total is 200"""
     return 8 + total / 200 * 20
 
+
 def fix_unicode(text):
     return text.replace(u'\u2019', "'")
 
+
 def build_buzzword_ranking():
     data = [
-        ("big data", 100, 15),
-        ("hadoop", 95, 25),
-        ("python", 75, 50),
-        ("R", 50, 40),
-        ("machine learning", 80, 20),
-        ("statistics", 20, 60),
-        ("data science", 60, 70),
-        ("analytics", 90, 3),
-        ("team player", 85, 85),
-        ("dynamic", 2, 90),
-        ("synergies", 70, 0),
-        ("actionable insights", 40, 30),
-        ("self-starter", 30, 50),
-        ("think out of the box", 45, 10),
-        ("customer focus", 65, 15),
+        ("big data", 100, 15), ("hadoop", 95, 25), ("python", 75, 50),
+        ("R", 50, 40), ("machine learning", 80, 20), ("statistics", 20, 60),
+        ("data science", 60, 70), ("analytics", 90, 3),
+        ("team player", 85, 85), ("dynamic", 2, 90), ("synergies", 70, 0),
+        ("actionable insights", 40, 30), ("self-starter", 30, 50),
+        ("think out of the box", 45, 10), ("customer focus", 65, 15),
         ("thought leadership", 35, 35)
     ]
 
     for word, job_popularity, resume_popularity in data:
-        pyplot.text(job_popularity, resume_popularity, word,
-                 ha='center', va='center',
-                 size=text_size(job_popularity + resume_popularity))
+        pyplot.text(job_popularity,
+                    resume_popularity,
+                    word,
+                    ha='center',
+                    va='center',
+                    size=text_size(job_popularity + resume_popularity))
     pyplot.xlabel("Popularity of jobs postings")
     pyplot.ylabel("Popularity on resumes")
-    pyplot.axis([0, 100, 0 , 100])
+    pyplot.axis([0, 100, 0, 100])
     pyplot.xticks([])
     pyplot.yticks([])
     pyplot.show()
+
 
 def generate_using_bigrams(transitions):
     current = "."
@@ -56,6 +53,7 @@ def generate_using_bigrams(transitions):
         result.append(current)
         if current == ".":
             return " ".join(result)
+
 
 def generate_using_trigrams(starts, transitions):
     current = random.choice(starts)
@@ -70,6 +68,7 @@ def generate_using_trigrams(starts, transitions):
         result.append(current)
         if current == ".":
             return " ".join(result)
+
 
 def get_document(url):
     html = requests.get(url).text
@@ -86,6 +85,7 @@ def get_document(url):
         document.extend(words)
     return document
 
+
 def get_bigram(document, count=10):
     bigrams = zip(document, document[1:])
     transitions = defaultdict(list)
@@ -97,6 +97,7 @@ def get_bigram(document, count=10):
     for i in range(count):
         result.append(generate_using_bigrams(transitions))
     return result
+
 
 def get_trigram(document):
     trigrams = zip(document, document[1:], document[2:])
@@ -111,8 +112,10 @@ def get_trigram(document):
     generated = generate_using_trigrams(starts, trigram_transitions)
     return generated
 
+
 def is_terminal(token):
     return token[0] != '_'
+
 
 def expand(grammar, tokens):
     for i, token in enumerate(tokens):
@@ -136,9 +139,9 @@ def expand(grammar, tokens):
     # if we get this far, it was all terminals
     return tokens
 
+
 def generate_sentence(grammar):
     return expand(grammar, ['_S'])
-
 
 
 if __name__ == '__main__':
@@ -162,8 +165,10 @@ if __name__ == '__main__':
         '_S': ['_NP _VP'],
         '_NP': ['_N', '_A _NP _P _A _N'],
         '_VP': ['_V', '_V _NP'],
-        '_N': ['data science', 'python', 'regression', 'engineering', 'management'],
-        '_A': ['big', 'linear', 'logistic', 'unwise', 'radical', 'conservative'],
+        '_N':
+        ['data science', 'python', 'regression', 'engineering', 'management'],
+        '_A':
+        ['big', 'linear', 'logistic', 'unwise', 'radical', 'conservative'],
         '_P': ['about', 'near', 'behind', 'below', 'around', 'besides'],
         '_V': ['learns', 'trains', 'leaves', 'develops', 'tests', 'is']
     }
@@ -171,4 +176,3 @@ if __name__ == '__main__':
     if 'grammars' == TEST_METHODOLOGY:
         sentence = generate_sentence(GRAMMAR)
         logging.info('(grammar): {}'.format(' '.join(sentence)))
-
